@@ -18,16 +18,25 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                echo 'Тестирование приложения'
-                sh 'test -s build/index.html'
-                sh 'grep -q "MRPO4 DevOps" build/index.html'
-                                    
-                sh 'test "$BUILD_MODE" = "training"'
+        
+    stage('Test') {
+        steps {
+            echo 'Тестирование приложения'
 
+            sh 'test -s build/index.html'
+            sh 'grep -q "MRPO4 DevOps" build/index.html'
+            sh 'test "$BUILD_MODE" = "training"'
+
+            withCredentials([string(
+                credentialsId: 'mrpo4-demo-token',
+                variable: 'DEMO_TOKEN'
+            )]) {
+                sh 'test -n "$DEMO_TOKEN"'
+                echo 'Проверка Jenkins Credentials успешна'
             }
         }
+    }
+
 
         stage('Deploy to Staging') {
             steps {
