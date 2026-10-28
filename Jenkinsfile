@@ -34,7 +34,6 @@ pipeline {
                 sh 'test -n "$DEMO_TOKEN"'
                 echo 'Проверка Jenkins Credentials успешна'
             }
-            sh 'exit 1'
         }
     }
 
