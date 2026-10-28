@@ -53,12 +53,33 @@ pipeline {
         }
     }
 
+    
     post {
         success {
             echo 'Конвейер успешно выполнен'
         }
+
         failure {
             echo 'Ошибка выполнения конвейера'
+
+            withCredentials([string(
+                credentialsId: 'mrpo4-notification-email',
+                variable: 'NOTIFY_EMAIL'
+            )]) {
+                mail(
+                    to: env.NOTIFY_EMAIL,
+                    subject: "Ошибка сборки №${env.BUILD_NUMBER}: ${env.JOB_NAME}",
+                    body: """Сборка Jenkins завершилась ошибкой.
+
+    Проект: ${env.JOB_NAME}
+    Номер сборки: ${env.BUILD_NUMBER}
+    Статус: FAILURE
+
+    Подробности: ${env.BUILD_URL}
+    """
+                )
+            }
         }
     }
+
 }
