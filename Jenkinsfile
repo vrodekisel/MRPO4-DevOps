@@ -1,10 +1,17 @@
 
 pipeline {
     agent any
+    
+    environment {
+        PROJECT_NAME = 'MRPO4-DevOps'
+        BUILD_MODE = 'training'
+    }
 
     stages {
         stage('Build') {
-            steps {
+            steps {    
+            echo "Проект: ${env.PROJECT_NAME}, режим: ${env.BUILD_MODE}, сборка №${env.BUILD_NUMBER}"
+
                 echo 'Сборка приложения'
                 sh 'mkdir -p build && cp index.html build/index.html'
                 archiveArtifacts artifacts: 'build/index.html'
@@ -16,6 +23,9 @@ pipeline {
                 echo 'Тестирование приложения'
                 sh 'test -s build/index.html'
                 sh 'grep -q "MRPO4 DevOps" build/index.html'
+                                    
+                sh 'test "$BUILD_MODE" = "training"'
+
             }
         }
 
